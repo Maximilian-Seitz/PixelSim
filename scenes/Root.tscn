@@ -1,0 +1,59 @@
+[gd_scene load_steps=8 format=3 uid="uid://cr0oe5ieu7in3"]
+
+[ext_resource type="Script" path="res://systems/pixel_simulation/PixelSimulation.gd" id="1_cnarf"]
+[ext_resource type="Script" path="res://systems/pixel_simulation/compute_shader/PixelSimulationComputer.gd" id="2_656x6"]
+[ext_resource type="RDShaderFile" uid="uid://bi7l8chehumh0" path="res://systems/pixel_simulation/compute_shader/PixelSimulation.glsl" id="3_r6n68"]
+[ext_resource type="Material" uid="uid://dkrplcswhegh4" path="res://visuals/grid_material.tres" id="4_7b5kg"]
+[ext_resource type="Script" path="res://visuals/highlighter.gd" id="5_0nlwv"]
+[ext_resource type="Script" path="res://systems/Updater.gd" id="6_q5o5b"]
+
+[sub_resource type="Resource" id="Resource_kb1b7"]
+script = ExtResource("2_656x6")
+shader_file = ExtResource("3_r6n68")
+
+[node name="Root" type="Node"]
+
+[node name="PixelSimulation" type="Node2D" parent="."]
+script = ExtResource("1_cnarf")
+field_size = Vector2i(100, 100)
+computer = SubResource("Resource_kb1b7")
+
+[node name="Highlighter" type="Node" parent="." node_paths=PackedStringArray("simulation")]
+process_mode = 4
+script = ExtResource("5_0nlwv")
+simulation = NodePath("../PixelSimulation")
+grid_material = ExtResource("4_7b5kg")
+
+[node name="Updater" type="Node" parent="."]
+script = ExtResource("6_q5o5b")
+updates_per_second = 0.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -73.0
+offset_top = -40.0
+offset_bottom = -1.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer"]
+layout_mode = 2
+
+[node name="UpdateButton" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Step"
+
+[node name="UpdateSpeedSlider" type="HSlider" parent="CanvasLayer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[connection signal="update_triggered" from="Updater" to="PixelSimulation" method="run_step"]
+[connection signal="pressed" from="CanvasLayer/MarginContainer/VBoxContainer/UpdateButton" to="PixelSimulation" method="run_step"]
+[connection signal="value_changed" from="CanvasLayer/MarginContainer/VBoxContainer/UpdateSpeedSlider" to="Updater" method="set_updates_per_second"]

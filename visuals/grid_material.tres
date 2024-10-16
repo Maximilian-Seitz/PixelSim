@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dkrplcswhegh4"]
+
+[ext_resource type="Shader" path="res://visuals/grid.gdshader" id="1_qandk"]
+
+[resource]
+shader = ExtResource("1_qandk")
+shader_parameter/highlight_pos = Vector2i(-1, -1)
