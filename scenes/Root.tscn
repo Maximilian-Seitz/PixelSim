@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cr0oe5ieu7in3"]
+[gd_scene load_steps=9 format=3 uid="uid://cr0oe5ieu7in3"]
 
 [ext_resource type="Script" path="res://systems/pixel_simulation/PixelSimulation.gd" id="1_cnarf"]
 [ext_resource type="Script" path="res://systems/pixel_simulation/compute_shader/PixelSimulationComputer.gd" id="2_656x6"]
@@ -6,6 +6,7 @@
 [ext_resource type="Material" uid="uid://dkrplcswhegh4" path="res://visuals/grid_material.tres" id="4_7b5kg"]
 [ext_resource type="Script" path="res://visuals/highlighter.gd" id="5_0nlwv"]
 [ext_resource type="Script" path="res://systems/Updater.gd" id="6_q5o5b"]
+[ext_resource type="Script" path="res://systems/cell_selection/CellSelector.gd" id="7_kiw7j"]
 
 [sub_resource type="Resource" id="Resource_kb1b7"]
 script = ExtResource("2_656x6")
@@ -17,9 +18,9 @@ shader_file = ExtResource("3_r6n68")
 script = ExtResource("1_cnarf")
 field_size = Vector2i(100, 100)
 computer = SubResource("Resource_kb1b7")
+field_material = ExtResource("4_7b5kg")
 
 [node name="Highlighter" type="Node" parent="." node_paths=PackedStringArray("simulation")]
-process_mode = 4
 script = ExtResource("5_0nlwv")
 simulation = NodePath("../PixelSimulation")
 grid_material = ExtResource("4_7b5kg")
@@ -46,6 +47,11 @@ theme_override_constants/margin_bottom = 8
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer"]
 layout_mode = 2
+
+[node name="CellSelector" type="OptionButton" parent="CanvasLayer/MarginContainer/VBoxContainer" node_paths=PackedStringArray("simulation")]
+layout_mode = 2
+script = ExtResource("7_kiw7j")
+simulation = NodePath("../../../../PixelSimulation")
 
 [node name="UpdateButton" type="Button" parent="CanvasLayer/MarginContainer/VBoxContainer"]
 layout_mode = 2

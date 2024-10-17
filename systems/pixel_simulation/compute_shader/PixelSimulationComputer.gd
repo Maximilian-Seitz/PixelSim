@@ -1,7 +1,8 @@
 class_name PixelSimulationComputer extends ComputeShader
 
 const CELL_NONE := 0.0
-const CELL_SAND := 0.5
+const CELL_WATER := 0.5
+const CELL_SAND := 0.75
 const CELL_WALL := 1.0
 
 
@@ -11,13 +12,16 @@ var render_texture := Texture2DRD.new()
 
 
 func set_cell_empty(pos: Vector2i) -> void:
-	_set_cell(pos, CELL_NONE)
+	_set_cell(pos, CELL_NONE, Vector3.ZERO)
+
+func set_cell_water(pos: Vector2i) -> void:
+	_set_cell(pos, CELL_WATER, Vector3(0, 0, randf()))
 
 func set_cell_sand(pos: Vector2i) -> void:
-	_set_cell(pos, CELL_SAND)
+	_set_cell(pos, CELL_SAND, Vector3(0, 0, randf()))
 
 func set_cell_wall(pos: Vector2i) -> void:
-	_set_cell(pos, CELL_WALL)
+	_set_cell(pos, CELL_WALL, Vector3(0, 0, randf()))
 
 
 var _temp_img: Image
@@ -62,11 +66,11 @@ func _init_uniform_sets() -> void:
 		field_size.x,
 		field_size.y,
 		false,
-		Image.FORMAT_L8
+		Image.FORMAT_RGBA8
 	)
 	
 	var img_format := RDTextureFormat.new()
-	img_format.format = RenderingDevice.DATA_FORMAT_R8_UNORM
+	img_format.format = RenderingDevice.DATA_FORMAT_R8G8B8A8_UNORM
 	img_format.width = field_size.x
 	img_format.height = field_size.y
 	img_format.usage_bits = RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT | RenderingDevice.TEXTURE_USAGE_COLOR_ATTACHMENT_BIT | RenderingDevice.TEXTURE_USAGE_STORAGE_BIT | RenderingDevice.TEXTURE_USAGE_CAN_UPDATE_BIT | RenderingDevice.TEXTURE_USAGE_CAN_COPY_FROM_BIT
@@ -91,8 +95,8 @@ func _prepare_run() -> Vector3i:
 	renderer.buffer_update(_params_buffer, 0, param_bytes.size(), param_bytes)
 	
 	return Vector3i(
-		ceil(float(render_texture.get_width())/2.0/8.0),
-		ceil(float(render_texture.get_height())/2.0/8.0),
+		ceil(float(render_texture.get_width())/2.0/8.0) + 1,
+		ceil(float(render_texture.get_height())/2.0/8.0) + 1,
 		1
 	)
 
@@ -115,7 +119,7 @@ func _generate_params_buffer() -> PackedByteArray:
 	return params_buffer.to_byte_array()
 
 
-func _set_cell(pos: Vector2i, type: float) -> void:
+func _set_cell(pos: Vector2i, type: float, data: Vector3) -> void:
 	_temp_img.set_data(
 		_temp_img.get_width(),
 		_temp_img.get_height(),
@@ -124,6 +128,6 @@ func _set_cell(pos: Vector2i, type: float) -> void:
 		renderer.texture_get_data(_target_texture, 0)
 	)
 	
-	_temp_img.set_pixelv(pos, Color(type, type, type, 1))
+	_temp_img.set_pixelv(pos, Color(data.x, data.y, data.z, type))
 	
 	renderer.texture_update(_target_texture, 0, _temp_img.get_data())

@@ -1,7 +1,29 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dkrplcswhegh4"]
+[gd_resource type="ShaderMaterial" load_steps=8 format=3 uid="uid://dkrplcswhegh4"]
 
 [ext_resource type="Shader" path="res://visuals/grid.gdshader" id="1_qandk"]
+
+[sub_resource type="Gradient" id="Gradient_mjw5o"]
+colors = PackedColorArray(0.827451, 0.705882, 0, 1, 0.54902, 0.478431, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_6o0i6"]
+gradient = SubResource("Gradient_mjw5o")
+
+[sub_resource type="Gradient" id="Gradient_fb0kk"]
+colors = PackedColorArray(0.303233, 0.303233, 0.303233, 1, 0.362829, 0.362829, 0.362829, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ovi7j"]
+gradient = SubResource("Gradient_fb0kk")
+
+[sub_resource type="Gradient" id="Gradient_svi57"]
+colors = PackedColorArray(0, 0.196078, 0.603922, 1, 0, 0.301961, 0.560784, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_rbi2i"]
+gradient = SubResource("Gradient_svi57")
 
 [resource]
 shader = ExtResource("1_qandk")
 shader_parameter/highlight_pos = Vector2i(-1, -1)
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/sand_color_range = SubResource("GradientTexture1D_6o0i6")
+shader_parameter/water_color_range = SubResource("GradientTexture1D_rbi2i")
+shader_parameter/stone_color_range = SubResource("GradientTexture1D_ovi7j")

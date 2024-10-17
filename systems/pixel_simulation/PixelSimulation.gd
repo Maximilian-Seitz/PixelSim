@@ -15,19 +15,29 @@ class_name PixelSimulation extends Node2D
 @export var field_material: Material
 
 
+enum CellType {
+	WATER,
+	SAND,
+	WALL
+}
+
+
 var sprite: Sprite2D
 var camera: Camera2D
 
 var is_busy: bool = false
 
+var selected_cell_type: CellType = CellType.SAND
 
-enum PlaceMode {
+
+
+enum _PlaceMode {
 	NONE,
 	CLEAR,
 	CELL
 }
 
-var _place_mode: PlaceMode
+var _place_mode: _PlaceMode
 
 
 func _ready() -> void:
@@ -66,26 +76,23 @@ func _unhandled_input(event: InputEvent):
 			elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 				zoom_out(get_local_mouse_position())
 			elif event.button_index == MOUSE_BUTTON_RIGHT:
-				_place_mode = PlaceMode.CLEAR
+				_place_mode = _PlaceMode.CLEAR
 			elif event.button_index == MOUSE_BUTTON_LEFT:
-				_place_mode = PlaceMode.CELL
+				_place_mode = _PlaceMode.CELL
 		else:
 			if event.button_index == MOUSE_BUTTON_RIGHT:
-				if _place_mode == PlaceMode.CLEAR:
-					_place_mode = PlaceMode.NONE
+				if _place_mode == _PlaceMode.CLEAR:
+					_place_mode = _PlaceMode.NONE
 			elif event.button_index == MOUSE_BUTTON_LEFT:
-				if _place_mode == PlaceMode.CELL:
-					_place_mode = PlaceMode.NONE
+				if _place_mode == _PlaceMode.CELL:
+					_place_mode = _PlaceMode.NONE
 
 func _process(_delta: float) -> void:
 	match _place_mode:
-		PlaceMode.CLEAR:
-			set_cell_empty(get_hovered_cell())
-		PlaceMode.CELL:
-			if Input.is_key_label_pressed(KEY_SHIFT):
-				set_cell_wall(get_hovered_cell())
-			else:
-				set_cell_sand(get_hovered_cell())
+		_PlaceMode.CLEAR:
+			clear_cell(get_hovered_cell())
+		_PlaceMode.CELL:
+			set_cell(get_hovered_cell(), selected_cell_type)
 
 func zoom_in(pos: Vector2) -> void:
 	var zoom_factor = camera.zoom.x * (1.0 + zoom_step)
@@ -117,14 +124,17 @@ func get_hovered_cell() -> Vector2i:
 	)
 
 
-func set_cell_empty(pos: Vector2i) -> void:
+func clear_cell(pos: Vector2i) -> void:
 	computer.set_cell_empty(pos)
 
-func set_cell_sand(pos: Vector2i) -> void:
-	computer.set_cell_sand(pos)
-
-func set_cell_wall(pos: Vector2i) -> void:
-	computer.set_cell_wall(pos)
+func set_cell(pos: Vector2i, type: CellType) -> void:
+	match type:
+		CellType.WATER:
+			computer.set_cell_water(pos)
+		CellType.SAND:
+			computer.set_cell_sand(pos)
+		CellType.WALL:
+			computer.set_cell_wall(pos)
 
 
 func run_step() -> void:
