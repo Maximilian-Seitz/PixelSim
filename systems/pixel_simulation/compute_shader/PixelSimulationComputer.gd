@@ -120,14 +120,15 @@ func _generate_params_buffer() -> PackedByteArray:
 
 
 func _set_cell(pos: Vector2i, type: float, data: Vector3) -> void:
-	_temp_img.set_data(
-		_temp_img.get_width(),
-		_temp_img.get_height(),
-		_temp_img.has_mipmaps(),
-		_temp_img.get_format(),
-		renderer.texture_get_data(_target_texture, 0)
-	)
-	
-	_temp_img.set_pixelv(pos, Color(data.x, data.y, data.z, type))
-	
-	renderer.texture_update(_target_texture, 0, _temp_img.get_data())
+	dispatch_edit(pos,type,data,_target_uniform_set)
+	#_temp_img.set_data(
+		#_temp_img.get_width(),
+		#_temp_img.get_height(),
+		#_temp_img.has_mipmaps(),
+		#_temp_img.get_format(),
+		#renderer.texture_get_data(_target_texture, 0)
+	#)
+	#
+	#_temp_img.set_pixelv(pos, Color(data.x, data.y, data.z, type))
+	#
+	#renderer.texture_update(_target_texture, 0, _temp_img.get_data())

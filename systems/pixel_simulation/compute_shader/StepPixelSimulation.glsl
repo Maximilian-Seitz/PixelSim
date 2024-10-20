@@ -3,32 +3,21 @@
 
 
 #include "lib/random.glsl"
-
+#include "lib/grid_utils.glsl"
 
 const float DELTA = 0.002;
 
 #define EQ(a, b) (abs((a) - (b)) < 0.002)
 #define LESS_THAN(a, b) ((a) < (b) - 0.002)
 
-
-struct Cell {
-	float type;
-	vec3 data;
-};
+#define SWAP(cell_a, cell_b) { Cell SWAP_CELL_TEMP_SLOT = cell_a; cell_a = cell_b; cell_b = SWAP_CELL_TEMP_SLOT; }
 
 
-#define CELL_TYPE_EMPTY (0.0)
-#define CELL_TYPE_WATER (0.5)
-#define CELL_TYPE_SAND (0.75)
-#define CELL_TYPE_WALL (1.0)
 
 #define IS_EMPTY(cell) EQ((cell).type, CELL_TYPE_EMPTY)
 #define IS_WATER(cell) EQ((cell).type, CELL_TYPE_WATER)
 #define IS_SAND(cell) EQ((cell).type, CELL_TYPE_SAND)
 #define IS_WALL(cell) EQ((cell).type, CELL_TYPE_WALL)
-
-
-#define SWAP(cell_a, cell_b) { Cell SWAP_CELL_TEMP_SLOT = cell_a; cell_a = cell_b; cell_b = SWAP_CELL_TEMP_SLOT; }
 
 
 #define CAN_SAND_DISPLACE(cell) LESS_THAN((cell).type, CELL_TYPE_SAND)
@@ -60,8 +49,6 @@ layout(set = 0, binding = 0, std430) restrict buffer ParamsBuffer {
 layout(set = 1, binding = 0, rgba8) restrict readonly uniform image2D input_img;
 layout(set = 2, binding = 0, rgba8) restrict writeonly uniform image2D output_img;
 
-
-
 Cell get_cell(ivec2 pos, ivec2 grid_size) {
 	if (pos.x < grid_size.x && pos.y < grid_size.y && pos.x >= 0 && pos.y >= 0) {
 		vec4 cell_bytes = imageLoad(input_img, pos);
@@ -76,6 +63,8 @@ void set_cell(ivec2 pos, ivec2 grid_size, Cell cell) {
 		imageStore(output_img, pos, vec4(cell.data, cell.type));
 	}
 }
+
+
 
 
 void process_chunk(ivec2 top_left_pos, float seed, ivec2 grid_size) {

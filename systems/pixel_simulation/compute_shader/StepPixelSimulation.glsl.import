@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bkovehofxiduq"
+path="res://.godot/imported/StepPixelSimulation.glsl-af1a19b33f232ea7af745a02936d735e.res"
+
+[deps]
+
+source_file="res://systems/pixel_simulation/compute_shader/StepPixelSimulation.glsl"
+dest_files=["res://.godot/imported/StepPixelSimulation.glsl-af1a19b33f232ea7af745a02936d735e.res"]
+
+[params]
+
