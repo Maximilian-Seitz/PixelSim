@@ -5,6 +5,7 @@
 #include "lib/random.glsl"
 #include "lib/grid_utils.glsl"
 
+
 const float DELTA = 0.002;
 
 #define EQ(a, b) (abs((a) - (b)) < 0.002)

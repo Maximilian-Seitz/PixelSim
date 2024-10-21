@@ -1,6 +1,7 @@
 #[compute]
 #version 450
 
+
 #include "lib/grid_utils.glsl"
 
 
@@ -11,10 +12,13 @@ layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 layout(set = 0, binding = 0, std430) restrict buffer ParamsBuffer {
 	ivec2 point;
     float type;
-    vec3 data;
+	float data_x;
+	float data_y;
+	float data_z;
 } params;
 
 layout(set = 1, binding = 0, rgba8) uniform image2D _img;
+
 
 // I have to redifine get_cell/set_cell, and I didn't move them into the util because of readonly/writeonly
 Cell get_cell(ivec2 pos, ivec2 grid_size) {
@@ -32,10 +36,11 @@ void set_cell(ivec2 pos, ivec2 grid_size, Cell cell) {
 	}
 }
 
+
 void main() {
-    ivec2 g_size = imageSize(_img);
-    Cell target_cell;
-    target_cell.data = params.data;
-    target_cell.type = params.type;
-	set_cell(params.point,g_size,target_cell);
+    set_cell(
+		params.point,
+		imageSize(_img),
+		Cell(params.type, vec3(params.data_x, params.data_y, params.data_z))
+	);
 }

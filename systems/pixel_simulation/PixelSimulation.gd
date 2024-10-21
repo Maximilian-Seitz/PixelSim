@@ -8,8 +8,8 @@ class_name PixelSimulation extends Node2D
 @export var max_zoom: float = 40.0
 @export var zoom_step: float = 0.1
 
-@export_group("Computation")
-@export var computer: PixelSimulationComputer
+@export_group("Simulation")
+@export var simulator: PixelSimulationComputer
 
 @export_group("Visuals")
 @export var field_material: Material
@@ -41,8 +41,8 @@ var _place_mode: _PlaceMode
 
 
 func _ready() -> void:
-	computer.field_size = field_size
-	computer.start()
+	simulator.field_size = field_size
+	simulator.setup()
 	
 	camera = Camera2D.new()
 	camera.zoom = 20 * Vector2.ONE
@@ -52,7 +52,7 @@ func _ready() -> void:
 	sprite = Sprite2D.new()
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.centered = false
-	sprite.texture = computer.render_texture
+	sprite.texture = simulator.render_texture
 	sprite.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	sprite.region_enabled = true
 	sprite.region_rect = Rect2(
@@ -125,22 +125,22 @@ func get_hovered_cell() -> Vector2i:
 
 
 func clear_cell(pos: Vector2i) -> void:
-	computer.set_cell_empty(pos)
+	simulator.set_cell_empty(pos)
 
 func set_cell(pos: Vector2i, type: CellType) -> void:
 	match type:
 		CellType.WATER:
-			computer.set_cell_water(pos)
+			simulator.set_cell_water(pos)
 		CellType.SAND:
-			computer.set_cell_sand(pos)
+			simulator.set_cell_sand(pos)
 		CellType.WALL:
-			computer.set_cell_wall(pos)
+			simulator.set_cell_wall(pos)
 
 
 func run_step() -> void:
 	if not is_busy:
 		is_busy = true
-		computer.run()
+		simulator.step()
 		is_busy = false
 
 func _center_camera() -> void:
