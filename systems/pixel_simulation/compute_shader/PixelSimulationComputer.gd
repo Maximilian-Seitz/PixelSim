@@ -19,27 +19,27 @@ var _step_compute_shader: ComputeShader
 var _edit_compute_shader: ComputeShader
 
 
-var _textures: Array[RID]
+var _textures: Array[ComputeShader.RDTexture]
 
-var _target_texture: RID:
+var _target_texture: ComputeShader.RDTexture:
 	get: return _textures[(_run_index + 1) % 2]
 
 
-var _texture_uniform_sets: Array[RID]
+var _texture_uniform_sets: Array[ComputeShader.UniformSet]
 
-var _source_uniform_set: RID:
+var _source_uniform_set: ComputeShader.UniformSet:
 	get: return _texture_uniform_sets[_run_index % 2]
 
-var _target_uniform_set: RID:
+var _target_uniform_set: ComputeShader.UniformSet:
 	get: return _texture_uniform_sets[(_run_index + 1) % 2]
 
 
-var _step_params_buffer: RID
-var _step_params_uniform_set: RID
+var _step_params_buffer: ComputeShader.RDBuffer
+var _step_params_uniform_set: ComputeShader.UniformSet
 
 
-var _edit_params_buffer: RID
-var _edit_params_uniform_set: RID
+var _edit_params_buffer: ComputeShader.RDBuffer
+var _edit_params_uniform_set: ComputeShader.UniformSet
 
 
 var _run_index: int = 0
@@ -53,25 +53,25 @@ func setup() -> void:
 	# Step params uniform
 	
 	var step_param_bytes := _generate_step_param_bytes(0)
-	_step_params_buffer = _step_compute_shader.create_storage_buffer(step_param_bytes.size())
+	_step_params_buffer = _step_compute_shader.create_buffer(step_param_bytes.size())
 	
 	var step_params_uniform = RDUniform.new()
 	step_params_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
 	step_params_uniform.binding = 0
-	step_params_uniform.add_id(_step_params_buffer)
-	_step_params_uniform_set = _step_compute_shader.generate_uniform_set([ step_params_uniform ], 0)
+	step_params_uniform.add_id(_step_params_buffer.rid)
+	_step_params_uniform_set = _step_compute_shader.create_uniform_set([ step_params_uniform ], 0)
 	
 	
 	# Edit params uniform
 	
 	var edit_param_bytes := _generate_edit_param_bytes(Vector2i.ZERO, 0, Vector3.ZERO)
-	_edit_params_buffer = _step_compute_shader.create_storage_buffer(edit_param_bytes.size())
+	_edit_params_buffer = _step_compute_shader.create_buffer(edit_param_bytes.size())
 	
 	var edit_params_uniform = RDUniform.new()
 	edit_params_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
 	edit_params_uniform.binding = 0
-	edit_params_uniform.add_id(_edit_params_buffer)
-	_edit_params_uniform_set = _edit_compute_shader.generate_uniform_set([ edit_params_uniform ], 0)
+	edit_params_uniform.add_id(_edit_params_buffer.rid)
+	_edit_params_uniform_set = _edit_compute_shader.create_uniform_set([ edit_params_uniform ], 0)
 	
 	
 	# Texture uniforms
@@ -88,35 +88,17 @@ func setup() -> void:
 		var texture_uniform := RDUniform.new()
 		texture_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 		texture_uniform.binding = 0
-		texture_uniform.add_id(_textures[i])
+		texture_uniform.add_id(_textures[i].rid)
 		
-		_texture_uniform_sets.append(_step_compute_shader.generate_uniform_set([ texture_uniform ], 1))
+		_texture_uniform_sets.append(_step_compute_shader.create_uniform_set([ texture_uniform ], 1))
 	
-	render_texture.texture_rd_rid = _textures[1]
-
-
-func clear() -> void:
-	for uniform_set in _texture_uniform_sets:
-		_step_compute_shader.free_uniform_set(uniform_set)
-	
-	_step_compute_shader.free_uniform_set(_step_params_uniform_set)
-	_edit_compute_shader.free_uniform_set(_edit_params_uniform_set)
-	
-	_step_compute_shader.free_storage_buffer(_step_params_buffer)
-	_edit_compute_shader.free_storage_buffer(_edit_params_buffer)
-	
-	for texture in _textures:
-		_step_compute_shader.free_texture(texture)
+	render_texture.texture_rd_rid = _textures[1].rid
 
 
 func step() -> void:
 	_run_index += 1
 	
-	_step_compute_shader.update_storage_buffer(
-		_step_params_buffer,
-		_generate_step_param_bytes(_run_index)
-	)
-	
+	_step_params_buffer.data = _generate_step_param_bytes(_run_index)
 	
 	var size = Vector3i(
 		ceil(float(render_texture.get_width())/2.0/8.0) + 1,
@@ -124,7 +106,7 @@ func step() -> void:
 		1
 	)
 	
-	var uniform_sets: Array[RID] = [
+	var uniform_sets: Array[ComputeShader.UniformSet] = [
 		_step_params_uniform_set,
 		_source_uniform_set,
 		_target_uniform_set
@@ -132,8 +114,7 @@ func step() -> void:
 	
 	_step_compute_shader.run(size, uniform_sets)
 	
-	
-	render_texture.texture_rd_rid = _target_texture
+	render_texture.texture_rd_rid = _target_texture.rid
 
 
 func set_cell_empty(pos: Vector2i) -> void:
@@ -150,11 +131,7 @@ func set_cell_wall(pos: Vector2i) -> void:
 
 
 func _set_cell(pos: Vector2i, type: float, data: Vector3) -> void:
-	_edit_compute_shader.update_storage_buffer(
-		_edit_params_buffer,
-		_generate_edit_param_bytes(pos, type, data)
-	)
-	
+	_edit_params_buffer.data = _generate_edit_param_bytes(pos, type, data)
 	
 	_edit_compute_shader.run(
 		Vector3i.ONE,
