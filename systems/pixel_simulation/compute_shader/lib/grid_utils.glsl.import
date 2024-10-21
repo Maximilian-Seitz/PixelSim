@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://cfk6loqlkr4e8"
+path="res://.godot/imported/grid_utils.glsl-da938996335ea966a65fcbd7e796071c.res"
+
+[deps]
+
+source_file="res://systems/pixel_simulation/compute_shader/lib/grid_utils.glsl"
+dest_files=["res://.godot/imported/grid_utils.glsl-da938996335ea966a65fcbd7e796071c.res"]
+
+[params]
+

@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://fngkrr0jhn15"
+path="res://.godot/imported/EditPixelSimulation.glsl-544b38820176e079ea0a1e1c94c89e3b.res"
+
+[deps]
+
+source_file="res://systems/pixel_simulation/compute_shader/EditPixelSimulation.glsl"
+dest_files=["res://.godot/imported/EditPixelSimulation.glsl-544b38820176e079ea0a1e1c94c89e3b.res"]
+
+[params]
+
