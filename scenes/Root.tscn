@@ -1,13 +1,13 @@
 [gd_scene load_steps=10 format=3 uid="uid://cr0oe5ieu7in3"]
 
-[ext_resource type="Script" path="res://systems/pixel_simulation/PixelSimulation.gd" id="1_cnarf"]
+[ext_resource type="Script" uid="uid://dr4eo4x0cje5u" path="res://systems/pixel_simulation/PixelSimulation.gd" id="1_cnarf"]
 [ext_resource type="RDShaderFile" uid="uid://fngkrr0jhn15" path="res://systems/pixel_simulation/compute_shader/EditPixelSimulation.glsl" id="2_0x7h0"]
-[ext_resource type="Script" path="res://systems/pixel_simulation/compute_shader/PixelSimulationComputer.gd" id="2_656x6"]
+[ext_resource type="Script" uid="uid://d18hx8i8wx7le" path="res://systems/pixel_simulation/compute_shader/PixelSimulationComputer.gd" id="2_656x6"]
 [ext_resource type="RDShaderFile" uid="uid://bkovehofxiduq" path="res://systems/pixel_simulation/compute_shader/StepPixelSimulation.glsl" id="4_3wcpb"]
 [ext_resource type="Material" uid="uid://dkrplcswhegh4" path="res://visuals/grid_material.tres" id="4_7b5kg"]
-[ext_resource type="Script" path="res://visuals/highlighter.gd" id="5_0nlwv"]
-[ext_resource type="Script" path="res://systems/Updater.gd" id="6_q5o5b"]
-[ext_resource type="Script" path="res://systems/cell_selection/CellSelector.gd" id="7_kiw7j"]
+[ext_resource type="Script" uid="uid://dfqsf4qwir5u3" path="res://visuals/highlighter.gd" id="5_0nlwv"]
+[ext_resource type="Script" uid="uid://cnbuk1qt6mgyf" path="res://systems/Updater.gd" id="6_q5o5b"]
+[ext_resource type="Script" uid="uid://bww8wjrtdwsyv" path="res://systems/cell_selection/CellSelector.gd" id="7_kiw7j"]
 
 [sub_resource type="Resource" id="Resource_puq00"]
 script = ExtResource("2_656x6")

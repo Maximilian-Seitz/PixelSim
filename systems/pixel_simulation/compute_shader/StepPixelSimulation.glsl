@@ -47,8 +47,8 @@ layout(set = 0, binding = 0, std430) restrict buffer ParamsBuffer {
 	int run_index;
 } params;
 
-layout(set = 1, binding = 0, rgba8) restrict readonly uniform image2D input_img;
-layout(set = 2, binding = 0, rgba8) restrict writeonly uniform image2D output_img;
+layout(set = 1, binding = 0, rgba8) restrict writeonly uniform image2D output_img;
+layout(set = 2, binding = 0, rgba8) restrict readonly uniform image2D input_img;
 
 Cell get_cell(ivec2 pos, ivec2 grid_size) {
 	if (pos.x < grid_size.x && pos.y < grid_size.y && pos.x >= 0 && pos.y >= 0) {

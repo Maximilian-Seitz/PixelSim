@@ -30,9 +30,9 @@ uniform sampler2D stone_color_range: source_color;
 void fragment() {
 	vec2 pixel_pos = UV / TEXTURE_PIXEL_SIZE;
 	vec2 pixel_offset = vec2(pixel_pos - floor(pixel_pos));
-	
+
 	Cell cell = Cell(COLOR.a, COLOR.rgb);
-	
+
 	if (IS_WALL(cell)) {
 		COLOR = texture(stone_color_range, vec2(cell.data.z, 0));
 	} else if (IS_SAND(cell)) {
@@ -42,7 +42,7 @@ void fragment() {
 	} else {
 		COLOR = background_color;
 	}
-	
+
 	if (ivec2(floor(pixel_pos)) == highlight_pos) {
 		vec3 highlight_color = vec3(0.4 - sin(pixel_offset.x*PI) * sin(pixel_offset.y*PI));
 		COLOR.rgb = max(highlight_color, COLOR.rgb);

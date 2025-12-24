@@ -25,13 +25,14 @@ var _target_texture: ComputeShader.RDTexture:
 	get: return _textures[(_run_index + 1) % 2]
 
 
-var _texture_uniform_sets: Array[ComputeShader.UniformSet]
+var _source_texture_uniform_sets: Array[ComputeShader.UniformSet]
+var _target_texture_uniform_sets: Array[ComputeShader.UniformSet]
 
 var _source_uniform_set: ComputeShader.UniformSet:
-	get: return _texture_uniform_sets[_run_index % 2]
+	get: return _source_texture_uniform_sets[_run_index % _source_texture_uniform_sets.size()]
 
 var _target_uniform_set: ComputeShader.UniformSet:
-	get: return _texture_uniform_sets[(_run_index + 1) % 2]
+	get: return _target_texture_uniform_sets[(_run_index + 1) % _target_texture_uniform_sets.size()]
 
 
 var _step_params_buffer: ComputeShader.RDBuffer
@@ -84,15 +85,21 @@ func setup() -> void:
 	
 	for i in 2:
 		_textures.append(_step_compute_shader.create_texture(img_format))
-		
-		var texture_uniform := RDUniform.new()
-		texture_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
-		texture_uniform.binding = 0
-		texture_uniform.add_id(_textures[i].rid)
-		
-		_texture_uniform_sets.append(_step_compute_shader.create_uniform_set([ texture_uniform ], 1))
 	
 	render_texture.texture_rd_rid = _textures[1].rid
+	
+	var uniform_set_groups = [_target_texture_uniform_sets, _source_texture_uniform_sets]
+	for uniform_set_num in uniform_set_groups.size():
+		# Go through the textures, and create a uniform-set for each texture for both input and output
+		for i in _textures.size():
+			var texture_uniform := RDUniform.new()
+			texture_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
+			texture_uniform.binding = 0
+			texture_uniform.add_id(_textures[i].rid)
+			
+			# The 'uniform_set_num' is 0 for the target texture, and 1 for the source texture.
+			# The uniform-set for the target-texture needs to be 1, and source-texture 2 (as defined in the shaders).
+			uniform_set_groups[uniform_set_num].append(_step_compute_shader.create_uniform_set([ texture_uniform ], 1 + uniform_set_num))
 
 
 func step() -> void:
@@ -108,8 +115,8 @@ func step() -> void:
 	
 	var uniform_sets: Array[ComputeShader.UniformSet] = [
 		_step_params_uniform_set,
-		_source_uniform_set,
-		_target_uniform_set
+		_target_uniform_set,
+		_source_uniform_set
 	]
 	
 	_step_compute_shader.run(size, uniform_sets)

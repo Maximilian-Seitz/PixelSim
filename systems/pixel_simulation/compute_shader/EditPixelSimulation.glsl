@@ -11,7 +11,7 @@ layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 // Uniforms
 layout(set = 0, binding = 0, std430) restrict buffer ParamsBuffer {
 	ivec2 point;
-    float type;
+	float type;
 	float data_x;
 	float data_y;
 	float data_z;
@@ -38,7 +38,7 @@ void set_cell(ivec2 pos, ivec2 grid_size, Cell cell) {
 
 
 void main() {
-    set_cell(
+	set_cell(
 		params.point,
 		imageSize(_img),
 		Cell(params.type, vec3(params.data_x, params.data_y, params.data_z))
